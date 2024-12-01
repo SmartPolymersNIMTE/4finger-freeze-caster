@@ -17,6 +17,7 @@ DIRECTION_UNDETERMINED = 0
 DIRECTION_DESCEND = 1
 DIRECTION_ASCEND = 2
 
+
 class Worker(object):
     def __init__(self, channel):
         self.pid = PIDController()
@@ -121,8 +122,6 @@ class Worker(object):
         output = self.clamp(output)
 
         return output
-
-
 
 
 def Init_workers(channel_count=4):
