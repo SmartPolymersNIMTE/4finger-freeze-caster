@@ -1,6 +1,7 @@
 import threading
 from PID import PIDController
 import rpi_interface
+import time
 
 Control_Interval_ms = 100   # modify this param to change frequence of control
 STABLE_KP = 1   # KP for mode stable
@@ -64,7 +65,12 @@ class Worker(object):
 
     def run(self):
         # 1. read
+        t = time.time()
         current_T = rpi_interface.read_temp(self.channel)
+        if current_T is None:
+            # channel not valid
+            return
+        self.T_data.append((t, current_T))
 
         # 2. control
         if self.mode == MODE_DESCEND:
@@ -75,8 +81,7 @@ class Worker(object):
             return
 
         # 3. output
-        self.output_data.append(output)
-        self.T_data.append(current_T)
+        self.output_data.append((t, output))
 
     def clamp(self, output):
         if output > MAX_OUTPUT:
