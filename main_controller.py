@@ -2,9 +2,7 @@ import threading
 from PID import PIDController
 import rpi_interface
 import time
-
-Control_Interval_ms = 100   # modify this param to change frequence of control
-STABLE_KP = 1   # KP for mode stable
+from consts import STABLE_KP, Control_Interval_ms
 
 g_workers = []
 

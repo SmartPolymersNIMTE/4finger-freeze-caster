@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from PySide6.QtCore import QFile, QRectF, QPointF
+from PySide6.QtCore import QFile, QRectF, QPointF, QTimer
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QApplication,
@@ -22,13 +22,25 @@ import main_controller
 from .dash_panel import DashChannelPanel
 from .GraphicView.AGraphicsView import AGraphicsView
 from .GraphPainter import GraphPainter
+from consts import QT_UPDATE_INTERVAL_MS
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.dash_panels = []
+        self._InitController()
         self._setupUI()
 
+    def _InitController(self):
+        main_controller.Init_workers(4)
+        self.workers = main_controller.g_workers
+        self.updatetimer = QTimer()
+        self.updatetimer.setInterval(QT_UPDATE_INTERVAL_MS)
+        self.updatetimer.timeout.connect(self.onTimer)
+        self.updatetimer.start()
+
+    def onTimer(self):
+        pass
 
     def _setupUI(self):
         self.setWindowTitle("PID Heater")
