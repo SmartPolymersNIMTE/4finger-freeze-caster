@@ -2,7 +2,7 @@ import threading
 from PID import PIDController
 import rpi_interface
 import time
-from consts import STABLE_KP, Control_Interval_ms
+from consts import STABLE_KP, Control_Interval_s
 
 g_workers = []
 
@@ -15,6 +15,13 @@ MAX_OUTPUT = 100
 DIRECTION_UNDETERMINED = 0
 DIRECTION_DESCEND = 1
 DIRECTION_ASCEND = 2
+
+
+class _RepeatTimer(threading.Timer):
+    def run(self):
+        while not self.finished.is_set():
+            self.finished.wait(self.interval)
+            self.function(*self.args, **self.kwargs)
 
 
 class Worker(object):
@@ -54,12 +61,12 @@ class Worker(object):
         self.pid.k_d = kd
 
     def start(self):
-        self.timer = threading.Timer(Control_Interval_ms, self.run)
+        self.timer = _RepeatTimer(Control_Interval_s, self.run)
         self.timer.start()
 
     def stop(self):
         if self.timer:
-            self.timer.stop()
+            self.timer.cancel()
 
     def run(self):
         # 1. read
@@ -133,3 +140,6 @@ def Init_workers(channel_count=4):
         g_workers.append(worker)
         worker.start()
 
+def Stop_workers():
+    for worker in g_workers:
+        worker.stop()

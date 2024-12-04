@@ -20,6 +20,7 @@ class GraphPainter(object):
         self.scene = view.scene()
         self.linepen = QPen()
         self.linepen.setWidth(0)
+        self.workers = None
         self.pointData = []
 
     def Reset(self):
@@ -30,6 +31,25 @@ class GraphPainter(object):
             fp.write("Disp(mm),Force(N),Temp(C)\n")
             for data in self.pointData:
                 fp.write(f"{data[0]},{data[1]},{data[2]}\n")
+
+    def Invalidate(self):
+        if not self.workers:
+            return
+        self.view.clearAllItems()
+        for i, worker in enumerate(self.workers):
+            tdata = worker.T_data
+            if len(tdata) == 0:
+                continue
+            t0 = tdata[0][0]
+            tx = 0
+            ty = tdata[0][1]
+            for d in tdata[1:]:
+                item = MyLine(tx, ty, d[0] - t0, d[1])
+                tx = d[0] - t0
+                ty = d[1]
+                item.setPen(self.linepen)
+                self.scene.addItem(item)
+                self.view.addItemByType("line", item)
 
     def AddData(self, x, y, z):
         self.pointData.append((x, y, z))

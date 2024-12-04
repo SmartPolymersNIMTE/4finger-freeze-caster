@@ -28,8 +28,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.dash_panels = []
-        self._InitController()
         self._setupUI()
+        self._InitController()
 
     def _InitController(self):
         main_controller.Init_workers(4)
@@ -38,9 +38,10 @@ class MainWindow(QMainWindow):
         self.updatetimer.setInterval(QT_UPDATE_INTERVAL_MS)
         self.updatetimer.timeout.connect(self.onTimer)
         self.updatetimer.start()
+        self.painter.workers = self.workers
 
     def onTimer(self):
-        pass
+        self.painter.Invalidate()
 
     def _setupUI(self):
         self.setWindowTitle("PID Heater")
@@ -76,3 +77,6 @@ class MainWindow(QMainWindow):
         hlayout.addWidget(self.view, 4)
         # settings
 
+    def closeEvent(self, event):
+        main_controller.Stop_workers()
+        return super().closeEvent(event)
