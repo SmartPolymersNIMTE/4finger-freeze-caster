@@ -1,4 +1,7 @@
 # -*- coding:utf-8 -*-
+import os
+import json
+from consts import CONFIG_FILE_NAME
 from PySide6.QtCore import QFile, QRectF, QPointF
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -101,3 +104,22 @@ class SettingChannelPanel(QFrame):
         layout.addWidget(self.I, 2, 6, 1, 1)
         layout.addWidget(QLabel("D"), 2, 7, 1, 1)
         layout.addWidget(self.D, 2, 8, 1, 1)
+
+    def SetData(self, data):
+        self.P.setText(data["p"])
+        self.I.setText(data["i"])
+        self.D.setText(data["d"])
+        self.targetT.setText(data["targetT"])
+        self.stableT.setText(data["stableT"])
+        self.dT.setText(data["dT"])
+
+    def GetData(self):
+        data = {
+            "p": self.P.text(),
+            "i": self.I.text(),
+            "d": self.D.text(),
+            "targetT": self.targetT.text(),
+            "stableT": self.stableT.text(),
+            "dT": self.dT.text()
+        }
+        return data
