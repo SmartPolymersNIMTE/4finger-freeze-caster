@@ -39,6 +39,7 @@ class DashChannelPanel(QFrame):
         tlabel = QLabel("测量温度")
         tlabel.setStyleSheet("QLabel{font: normal 25px; color: #f04040}")
         self.tdata = QLabel()
+        self.tdata.setStyleSheet("QLabel{font: normal 25px; color: #f04040}")
         vlayout = QVBoxLayout()
         buttonlayout = QHBoxLayout()
         tlayout = QHBoxLayout()
@@ -63,6 +64,15 @@ class DashChannelPanel(QFrame):
 
         self.start.clicked.connect(self.OnStart)
         self.stable.clicked.connect(self.OnStable)
+
+    def SetTData(self, data):
+        self.tsetdata.setText(data["targetT"])
+
+    def SetMeasureData(self, worker):
+        if len(worker.T_data) > 0:
+            self.tdata.setText("%.1f" % worker.T_data[-1][1])
+        if len(worker.output_data) > 0:
+            self.powerdata.setText("%.1f" % worker.output_data[-1][1])
 
     def OnStart(self):
         if self.start.isChecked():

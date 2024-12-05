@@ -6,6 +6,7 @@ from consts import STABLE_KP, Control_Interval_s
 
 g_workers = []
 
+MODE_IDLE = -1
 MODE_DESCEND = 0
 MODE_STABLE = 1
 
@@ -29,7 +30,7 @@ class Worker(object):
         self.pid = PIDController()
         self.stable_pid = PIDController(STABLE_KP)
         self.timer = None
-        self.mode = MODE_DESCEND
+        self.mode = MODE_IDLE
         self.channel = channel
 
         # status
@@ -45,15 +46,15 @@ class Worker(object):
         self.T_data = []
         self.output_data = []
 
-    def start_decend(self, target_T, target_dT):
+    def start_decend(self):
         self.target_direction = DIRECTION_UNDETERMINED
-        self.target_T = target_T
-        self.target_dT = target_dT
         self.mode = MODE_DESCEND
 
-    def start_stable(self, init_T):
-        self.initial_T = init_T
-        self.mode = MODE_DESCEND
+    def start_stable(self):
+        self.mode = MODE_STABLE
+
+    def stop(self):
+        self.mode = MODE_IDLE
 
     def set_pid_params(self, kp, ki, kd):
         self.pid.k_p = kp

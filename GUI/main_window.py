@@ -16,7 +16,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QLineEdit,
-    QLabel
+    QLabel,
+    QPushButton
 
 )
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QIcon, QPainter
@@ -59,6 +60,8 @@ class MainWindow(QMainWindow):
 
     def onTimer(self):
         self.painter.Invalidate()
+        for i in range(4):
+            self.dash_panels[i].SetMeasureData(self.workers[i])
 
     def _setupUI(self):
         self.setWindowTitle("PID Heater")
@@ -80,6 +83,14 @@ class MainWindow(QMainWindow):
             panel = DashChannelPanel()
             lvlayout.addWidget(panel)
             self.dash_panels.append(panel)
+            if str(i) in self.config:
+                panel.SetTData(self.config[str(i)])
+            panel.start.clicked.connect(partial(self.onStart, i))
+            panel.stable.clicked.connect(partial(self.onStable, i))
+
+        self.clearBtn = QPushButton("清屏")
+        self.clearBtn.clicked.connect(self.onClear)
+        lvlayout.addWidget(self.clearBtn)
 
         self.view = AGraphicsView(self)
         self.scene = QGraphicsScene()
@@ -103,9 +114,38 @@ class MainWindow(QMainWindow):
                 settingpanel.SetData(self.config[str(i)])
             settingpanel.save.clicked.connect(partial(self.onSave, i))
 
+    def onClear(self):
+        pass
+
+    def onStart(self, index):
+        worker = self.workers[index]
+        if self.dash_panels[index].start.isChecked():
+            self.workers[index].start_decend()
+        else:
+            worker.stop()
+
+    def onStable(self, index):
+        worker = self.workers[index]
+        if self.dash_panels[index].stable.isChecked():
+            self.workers[index].start_stable()
+        else:
+            worker.stop()
+
     def onSave(self, index):
-        self.config.setdefault(str(index), {}).update(self.settings[index].GetData())
+        data = self.settings[index].GetData()
+        self.dash_panels[index].SetData(data)
+        self.config.setdefault(str(index), {}).update(data)
         self.SaveConfig()
+        self.setWorkerParams(self.workers[index], data)
+
+    def setWorkerParams(self, worker, data):
+        try:
+            worker.set_pid_params(float(data["p"]), float(data["i"]), float(data["d"]))
+            worker.target_T = float(data["targetT"])
+            worker.target_dT = float(data["dT"])
+            worker.initial_T = float(data["stableT"])
+        except:
+            print("Param error:", data)
 
     def closeEvent(self, event):
         main_controller.Stop_workers()
