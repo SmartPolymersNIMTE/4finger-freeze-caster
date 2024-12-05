@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QBrush, QPen, QColor, QFont, QIcon, QPainter
 import main_controller
-from .dash_panel import DashChannelPanel
+from .panels import DashChannelPanel, SettingChannelPanel
 from .GraphicView.AGraphicsView import AGraphicsView
 from .GraphPainter import GraphPainter
 from consts import QT_UPDATE_INTERVAL_MS
@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.dash_panels = []
+        self.settings = []
         self._setupUI()
         self._InitController()
 
@@ -76,6 +77,12 @@ class MainWindow(QMainWindow):
         self.view._vMarkline.setAxisLabel("温度 (°C)")
         hlayout.addWidget(self.view, 4)
         # settings
+        slayout = QVBoxLayout()
+        frame2.setLayout(slayout)
+        for i in range(4):
+            settingpanel = SettingChannelPanel()
+            self.settings.append(settingpanel)
+            slayout.addWidget(settingpanel)
 
     def closeEvent(self, event):
         main_controller.Stop_workers()
