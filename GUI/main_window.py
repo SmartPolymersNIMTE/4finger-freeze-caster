@@ -115,6 +115,12 @@ class MainWindow(QMainWindow):
             settingpanel.save.clicked.connect(partial(self.onSave, i))
 
     def onClear(self):
+        self.dumpData()
+        for worker in self.workers:
+            worker.clear_data()
+
+    def dumpData(self):
+        # 把现在的所有数据存到文件里
         pass
 
     def onStart(self, index):

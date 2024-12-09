@@ -46,6 +46,10 @@ class Worker(object):
         self.T_data = []
         self.output_data = []
 
+    def clear_data(self):
+        self.T_data.clear()
+        self.output_data.clear()
+
     def start_decend(self):
         self.target_direction = DIRECTION_UNDETERMINED
         self.mode = MODE_DESCEND
