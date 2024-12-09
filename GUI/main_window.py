@@ -133,7 +133,7 @@ class MainWindow(QMainWindow):
 
     def onSave(self, index):
         data = self.settings[index].GetData()
-        self.dash_panels[index].SetData(data)
+        self.dash_panels[index].SetTData(data)
         self.config.setdefault(str(index), {}).update(data)
         self.SaveConfig()
         self.setWorkerParams(self.workers[index], data)
