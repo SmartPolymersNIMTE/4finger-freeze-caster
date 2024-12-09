@@ -2,6 +2,8 @@ import threading
 from PID import PIDController
 import rpi_interface
 import time
+import os
+from consts import DATA_DIR
 from consts import STABLE_KP, Control_Interval_s
 
 g_workers = []
@@ -45,10 +47,21 @@ class Worker(object):
         # outputs
         self.T_data = []
         self.output_data = []
+        self.data_index = 0
+
+    def saveCSV(self, fileprefix, savestatus):
+        filename = f"{fileprefix}_{self.channel}_{savestatus}.csv"
+        path = os.path.join(os.path.curdir, DATA_DIR, filename)
+
+        with open(path, "a") as fp:
+            for i in range(self.data_index, len(self.T_data)):
+                fp.write(f"{self.T_data[i][0]},{self.T_data[i][1]},{self.output_data[i][1]}\n")
+        self.data_index = len(self.T_data)
 
     def clear_data(self):
         self.T_data.clear()
         self.output_data.clear()
+        self.data_index = 0
 
     def start_decend(self):
         self.target_direction = DIRECTION_UNDETERMINED
@@ -69,7 +82,7 @@ class Worker(object):
         self.timer = _RepeatTimer(Control_Interval_s, self.run)
         self.timer.start()
 
-    def stop(self):
+    def terminate(self):
         if self.timer:
             self.timer.cancel()
 
@@ -88,7 +101,7 @@ class Worker(object):
         elif self.mode == MODE_STABLE:
             output = self.run_descend_mode(current_T)
         else:
-            return
+            output = 0
 
         # 3. output
         self.output_data.append((t, output))
@@ -145,6 +158,7 @@ def Init_workers(channel_count=4):
         g_workers.append(worker)
         worker.start()
 
+
 def Stop_workers():
     for worker in g_workers:
-        worker.stop()
+        worker.terminate()
