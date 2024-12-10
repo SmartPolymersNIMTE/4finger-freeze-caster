@@ -3,7 +3,7 @@ from PID import PIDController
 import rpi_interface
 import time
 import os
-from consts import DATA_DIR
+from consts import DATA_DIR, MAX_DUTY
 from consts import STABLE_KP, Control_Interval_s
 
 g_workers = []
@@ -13,7 +13,6 @@ MODE_DESCEND = 0
 MODE_STABLE = 1
 
 MIN_OUTPUT = 0
-MAX_OUTPUT = 100
 
 DIRECTION_UNDETERMINED = 0
 DIRECTION_DESCEND = 1
@@ -48,6 +47,7 @@ class Worker(object):
         self.T_data = []
         self.output_data = []
         self.data_index = 0
+        self.lastoutput = 0
 
     def saveCSV(self, fileprefix, savestatus):
         filename = f"{fileprefix}_{self.channel}_{savestatus}.csv"
@@ -72,6 +72,7 @@ class Worker(object):
 
     def stop(self):
         self.mode = MODE_IDLE
+        self.pid.reset()
 
     def set_pid_params(self, kp, ki, kd):
         self.pid.k_p = kp
@@ -99,24 +100,28 @@ class Worker(object):
         if self.mode == MODE_DESCEND:
             output = self.run_descend_mode(current_T)
         elif self.mode == MODE_STABLE:
-            output = self.run_descend_mode(current_T)
+            output = self.run_stable_mode(current_T)
         else:
             output = 0
-
+        self.last_T = current_T
         # 3. output
         self.output_data.append((t, output))
+        
+        if self.lastoutput != output:
+            rpi_interface.set_pwm(self.channel, output)
+            self.lastoutput = output
 
     def clamp(self, output):
-        if output > MAX_OUTPUT:
-            output = MAX_OUTPUT
+        if output > MAX_DUTY:
+            output = MAX_DUTY
         if output < MIN_OUTPUT:
             output = MIN_OUTPUT
         return output
 
     def run_stable_mode(self, current_T):
         # 1. calc error
-        error_T = current_T - self.initial_T
-
+        error_T = self.initial_T - current_T
+        
         # 2. PID
         output = self.stable_pid.PID_Update(error_T)
 
@@ -136,12 +141,14 @@ class Worker(object):
         if self.target_direction == DIRECTION_DESCEND and current_T <= self.target_T \
                 or self.target_direction == DIRECTION_ASCEND and current_T >= self.target_T:
             self.mode = MODE_STABLE
+            self.pid.reset()
             self.initial_T = self.target_T
+            return 0
 
         # 2. update status and calc error
         dT = current_T - self.last_T
-        error_dT = dT - self.target_dT
-        self.last_T = current_T
+        error_dT = self.target_dT - dT
+        
 
         # 3. PID
         output = self.pid.PID_Update(error_dT)
@@ -153,6 +160,7 @@ class Worker(object):
 
 
 def Init_workers(channel_count=4):
+    rpi_interface.init()
     for i in range(channel_count):
         worker = Worker(i)
         g_workers.append(worker)

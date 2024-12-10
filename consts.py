@@ -4,6 +4,8 @@ STABLE_KP = 1   # KP for mode stable
 
 QT_UPDATE_INTERVAL_MS = 100
 CSV_SAVE_INTERVAL_S = 10
+MOSFET_FREQ = 100
+MAX_DUTY = 10.0
 
 CONFIG_FILE_NAME = "config.json"
 DATA_DIR = "Data"

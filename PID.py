@@ -10,8 +10,9 @@ class PIDController(object):
         self.last_error = 0
 
     def reset(self):
-        self.sum_error = 0
+        self.sum_error = 0        
         self.last_error = 0
+        
     def PID_Update(self, cur_error):
         # update params
         self.sum_error += cur_error
@@ -19,6 +20,6 @@ class PIDController(object):
         self.last_error = cur_error
 
         # pid formula
-        output = self.k_p + self.k_i * self.sum_error + self.k_d * d_err
-
+        output = self.k_p * cur_error + self.k_i * self.sum_error + self.k_d * d_err
+        print(self.sum_error, cur_error, output)
         return output

@@ -1,13 +1,13 @@
 
 
-from PySide6.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 from GUI.main_window import MainWindow
 
 def main():
     app = QApplication([])
     mainWnd = MainWindow()
     mainWnd.show()
-    app.exec()
+    app.exec_()
 
 
 # Press the green button in the gutter to run the script.
