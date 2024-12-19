@@ -50,6 +50,7 @@ class GraphPainter(object):
                 item.setPen(self.linepen)
                 self.scene.addItem(item)
                 self.view.addItemByType("line", item)
+        self.view.fitView()
 
     def AddData(self, x, y, z):
         self.pointData.append((x, y, z))
