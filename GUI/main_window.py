@@ -146,7 +146,8 @@ class MainWindow(QMainWindow):
             settingpanel.save.clicked.connect(partial(self.onSave, i))
 
     def onClear(self):
-        self.triggerAutosave()
+        t = time.time()
+        self.triggerAutosave(t)
         self._updateClearTime()
         for worker in self.workers:
             worker.clear_data()
