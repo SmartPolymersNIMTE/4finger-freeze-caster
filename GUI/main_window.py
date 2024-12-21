@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
         worker = self.workers[index]
         if self.dash_panels[index].start.isChecked():
             self.workers[index].start_decend()
-            self.paintSlash()
+            self.paintSlash(index)
         else:
             worker.stop()
 
