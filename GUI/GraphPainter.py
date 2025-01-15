@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsLineItem
-from PySide6.QtGui import QPen, QColor
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsLineItem
+from PySide2.QtGui import QPen, QColor
 from .GraphicView.AGraphicsView import AGraphicsView
 
 class MyLine(QGraphicsLineItem):

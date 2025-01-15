@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 # @ModuleName: AxisObjects
 
-from PySide6.QtWidgets import QGraphicsObject, QGraphicsItem, QGraphicsTextItem
-from PySide6.QtGui import QBrush, QPen, QColor, QFont, QPolygonF
-from PySide6.QtCore import QLineF, QPointF, QRectF, Qt
+from PySide2.QtWidgets import QGraphicsObject, QGraphicsItem, QGraphicsTextItem
+from PySide2.QtGui import QBrush, QPen, QColor, QFont, QPolygonF
+from PySide2.QtCore import QLineF, QPointF, QRectF, Qt
 import math
 
 MARKTRACK_MODE_LINEAR = 0

@@ -2,9 +2,9 @@
 import os
 import time
 import json
-from PySide6.QtCore import QFile, QRectF, QPointF, QTimer
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import (
+from PySide2.QtCore import QFile, QRectF, QPointF, QTimer
+from PySide2.QtUiTools import QUiLoader
+from PySide2.QtWidgets import (
     QApplication,
     QMainWindow,
     QGraphicsScene,
@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
     QPushButton
 
 )
-from PySide6.QtGui import QBrush, QPen, QColor, QFont, QIcon, QPainter
+from PySide2.QtGui import QBrush, QPen, QColor, QFont, QIcon, QPainter
 import main_controller
 from .panels import DashChannelPanel, SettingChannelPanel
 from .GraphicView.AGraphicsView import AGraphicsView
@@ -50,6 +50,9 @@ class MainWindow(QMainWindow):
     def _InitController(self):
         main_controller.Init_workers(4)
         self.workers = main_controller.g_workers
+        for i, worker in enumerate(self.workers):
+            if str(i) in self.config:
+                self.setWorkerParams(worker, self.config[str(i)])
         self.updatetimer = QTimer()
         self.updatetimer.setInterval(QT_UPDATE_INTERVAL_MS)
         self.updatetimer.timeout.connect(self.onTimer)

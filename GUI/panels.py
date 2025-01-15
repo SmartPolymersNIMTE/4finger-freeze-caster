@@ -2,9 +2,9 @@
 import os
 import json
 from consts import CONFIG_FILE_NAME
-from PySide6.QtCore import QFile, QRectF, QPointF
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import (
+from PySide2.QtCore import QFile, QRectF, QPointF
+from PySide2.QtUiTools import QUiLoader
+from PySide2.QtWidgets import (
     QApplication,
     QMainWindow,
     QGraphicsScene,

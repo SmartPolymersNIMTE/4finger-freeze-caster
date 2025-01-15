@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QMessageBox
+from PySide2.QtWidgets import QWidget, QMessageBox
 
 class simpleErrorPopUp(QWidget):
     def __init__(self, error_message: str):
