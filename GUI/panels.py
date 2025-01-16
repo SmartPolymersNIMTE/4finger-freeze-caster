@@ -24,17 +24,40 @@ from PySide2.QtWidgets import (
 
 )
 
+
+style1 = """
+QToolButton
+{
+font: bold; font-family: Microsoft Yahei; color: #ff0000; background-color: #808080
+}
+QToolButton:checked
+{
+font: bold; font-family: Microsoft Yahei; background-color: #ff0000; color: #808080; border: none
+}
+"""
+
+style2 = """
+QToolButton
+{
+font: bold; font-family: Microsoft Yahei; color: #00ff00; background-color: #808080
+}
+QToolButton:checked
+{
+font: bold; font-family: Microsoft Yahei; background-color: #00ff00; color: #808080; border: none
+}
+"""
+
 class DashChannelPanel(QFrame):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("DashChannelPanel{border-style: solid; border-width: 1px;}")
         self.start = QToolButton()
         self.start.setText("开始")
-        self.start.setStyleSheet("QToolButton{font: bold; color: #f01010}")
+        self.start.setStyleSheet(style1)
         self.start.setCheckable(True)
         self.stable = QToolButton()
         self.stable.setText("恒温")
-        self.stable.setStyleSheet("QToolButton{font: bold; color: #106010}")
+        self.stable.setStyleSheet(style2)
         self.stable.setCheckable(True)
         tlabel = QLabel("测量温度")
         tlabel.setStyleSheet("QLabel{font: normal 25px; color: #f04040}")
