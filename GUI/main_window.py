@@ -62,6 +62,11 @@ class MainWindow(QMainWindow):
         self.slashCtrl = SlashController()
         self.painter.slashCtrl = self.slashCtrl
 
+        for i in range(4):
+            if str(i) in self.config:
+                data = self.config[str(i)]
+                self.setWorkerParams(self.workers[i], data)
+
         datadir = os.path.join(os.path.curdir, DATA_DIR)
         if not os.path.exists(datadir):
             os.makedirs(datadir, exist_ok=True)
