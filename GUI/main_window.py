@@ -26,6 +26,7 @@ import main_controller
 from .panels import DashChannelPanel, SettingChannelPanel
 from .GraphicView.AGraphicsView import AGraphicsView
 from .GraphPainter import GraphPainter
+from .SlashController import SlashController
 from consts import QT_UPDATE_INTERVAL_MS, CONFIG_FILE_NAME, CSV_SAVE_INTERVAL_S, DATA_DIR
 from functools import partial
 
@@ -58,6 +59,8 @@ class MainWindow(QMainWindow):
         self.updatetimer.timeout.connect(self.onTimer)
         self.updatetimer.start()
         self.painter.workers = self.workers
+        self.slashCtrl = SlashController()
+        self.painter.slashCtrl = self.slashCtrl
 
         datadir = os.path.join(os.path.curdir, DATA_DIR)
         if not os.path.exists(datadir):
@@ -121,6 +124,8 @@ class MainWindow(QMainWindow):
                 panel.SetTData(self.config[str(i)])
             panel.start.clicked.connect(partial(self.onStart, i))
             panel.stable.clicked.connect(partial(self.onStable, i))
+            panel.left.clicked.connect(partial(self.onSlashMove, "left", i))
+            panel.right.clicked.connect(partial(self.onSlashMove, "right", i))
 
         self.clearBtn = QPushButton("清屏")
         self.clearBtn.clicked.connect(self.onClear)
@@ -152,11 +157,25 @@ class MainWindow(QMainWindow):
         t = time.time()
         self.triggerAutosave(t)
         self._updateClearTime()
+        self.clearAllSlash()
         for worker in self.workers:
             worker.clear_data()
 
     def paintSlash(self, index):
-        pass
+        worker = self.workers[index]
+        currentValue = worker.T_data[-1][1]
+        targetDT = worker.target_dT
+        targetT = worker.target_T
+        self.slashCtrl.createSlash(index, time.time(), currentValue, targetDT, targetT)
+
+    def onSlashMove(self, direction, index):
+        self.slashCtrl.move(direction, index)
+
+    def clearSlash(self, index):
+        self.slashCtrl.setVisible(False, index)
+
+    def clearAllSlash(self):
+        self.slashCtrl.hideAll()
 
     def onStart(self, index):
         worker = self.workers[index]
@@ -165,6 +184,7 @@ class MainWindow(QMainWindow):
             self.paintSlash(index)
         else:
             worker.stop()
+            self.clearSlash(index)
 
     def onStable(self, index):
         worker = self.workers[index]

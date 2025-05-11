@@ -59,12 +59,18 @@ class DashChannelPanel(QFrame):
         self.stable.setText("恒温")
         self.stable.setStyleSheet(style2)
         self.stable.setCheckable(True)
+        self.left = QPushButton("←")
+        self.right = QPushButton("→")
+        self.left.setVisible(False)
+        self.right.setVisible(False)
+
         tlabel = QLabel("测量温度")
         tlabel.setStyleSheet("QLabel{font: normal 25px; color: #f04040}")
         self.tdata = QLabel()
         self.tdata.setStyleSheet("QLabel{font: normal 25px; color: #f04040}")
         vlayout = QVBoxLayout()
         buttonlayout = QHBoxLayout()
+        button2layout = QHBoxLayout()
         tlayout = QHBoxLayout()
         tlayout.addWidget(tlabel)
         tlayout.addWidget(self.tdata)
@@ -79,8 +85,11 @@ class DashChannelPanel(QFrame):
         vlayout.addLayout(tlayout)
         vlayout.addLayout(setlayout)
         vlayout.addLayout(buttonlayout)
+        vlayout.addLayout(button2layout)
         buttonlayout.addWidget(self.start)
         buttonlayout.addWidget(self.stable)
+        button2layout.addWidget(self.left)
+        button2layout.addWidget(self.right)
         self.setLayout(vlayout)
 
         self.setMaximumWidth(200)
@@ -98,6 +107,8 @@ class DashChannelPanel(QFrame):
             self.powerdata.setText("%.1f" % worker.output_data[-1][1])
 
     def OnStart(self):
+        self.left.setVisible(self.start.isChecked())
+        self.right.setVisible(self.start.isChecked())
         if self.start.isChecked():
             if self.stable.isChecked():
                 self.stable.setChecked(False)
@@ -106,6 +117,9 @@ class DashChannelPanel(QFrame):
         if self.stable.isChecked():
             if self.start.isChecked():
                 self.start.setChecked(False)
+
+        self.left.setVisible(self.start.isChecked())
+        self.right.setVisible(self.start.isChecked())
 
 
 class SettingChannelPanel(QFrame):

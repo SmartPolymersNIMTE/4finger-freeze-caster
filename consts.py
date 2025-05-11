@@ -9,3 +9,5 @@ MAX_DUTY = 10.0
 
 CONFIG_FILE_NAME = "config.json"
 DATA_DIR = "Data"
+
+SLASH_INTERVAL_S = 1

@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsLineItem
 from PySide2.QtGui import QPen, QColor
+from PySide2.QtCore import Qt
 from .GraphicView.AGraphicsView import AGraphicsView
 
 class MyLine(QGraphicsLineItem):
@@ -13,6 +14,14 @@ class MyLine(QGraphicsLineItem):
             rect.setHeight(0.1)
         return rect
 
+class DashLine(MyLine):
+    def __init__(self, x1, y1, x2, y2):
+        super().__init__(x1, y1, x2, y2)
+        self.pen = QPen(QColor(30, 30, 30, 200), 0, Qt.DashLine)
+        self.pen.setWidth(0)  # linewidth not zooming
+
+        self.setPen(self.pen)
+
 class GraphPainter(object):
     def __init__(self, view: AGraphicsView):
         super().__init__()
@@ -21,6 +30,7 @@ class GraphPainter(object):
         self.linepen = QPen()
         self.linepen.setWidth(0)
         self.workers = None
+        self.slashCtrl = None
         self.pointData = []
 
     def Reset(self):
@@ -36,6 +46,9 @@ class GraphPainter(object):
         if not self.workers:
             return
         self.view.clearAllItems()
+        slashs = []
+        if self.slashCtrl:
+            slashs = self.slashCtrl.getSlashObjects()
         for i, worker in enumerate(self.workers):
             tdata = worker.T_data
             if len(tdata) == 0:
@@ -43,6 +56,13 @@ class GraphPainter(object):
             t0 = tdata[0][0]
             tx = 0
             ty = tdata[0][1]
+            if slashs:
+                slash = slashs[i]
+                if not slash.visible:
+                    continue
+                item = DashLine(slash.p0[0] - t0, slash.p0[1], slash.p1[0] - t0, slash.p1[1])
+                self.scene.addItem(item)
+                self.view.addItemByType("slash", item)
             for d in tdata[1:]:
                 item = MyLine(tx, ty, d[0] - t0, d[1])
                 tx = d[0] - t0
